@@ -3,34 +3,16 @@ import numpy as np
 from typing import Optional
 
 class LevelUpDetector:
-    def __init__(self, template_path: str = "assets/level_up_template.png", threshold: float = 0.8):
-        self.template = cv2.imread(template_path)
-        if self.template is None:
-            print(f"Warning: Could not load level up template from {template_path}")
+    def __init__(self, threshold: float = 0.8):
         self.threshold = threshold
 
     def is_level_up_screen(self, frame: np.ndarray) -> bool:
         """
         Checks if the 'Level Up!' screen is present in the current frame 
-        using template matching.
+        using color signature.
         """
-        if self.template is None or frame is None:
+        if frame is None:
             return False
-
-        # Convert to grayscale for faster/robust matching
-        frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        template_gray = cv2.cvtColor(self.template, cv2.COLOR_BGR2GRAY)
-
-        # Check if frame is smaller than template
-        if frame_gray.shape[0] < template_gray.shape[0] or frame_gray.shape[1] < template_gray.shape[1]:
-            return False
-
-        result = cv2.matchTemplate(frame_gray, template_gray, cv2.TM_CCOEFF_NORMED)
-        _, max_val, _, _ = cv2.minMaxLoc(result)
-        
-        # Combined check: Template match OR Color signature
-        if max_val >= self.threshold:
-            return True
             
         return self.check_color_signature(frame)
         

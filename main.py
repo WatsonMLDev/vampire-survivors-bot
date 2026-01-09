@@ -8,7 +8,7 @@ from bot.computer_vision.annotations import AnnotationDrawer
 from bot.computer_vision.object_detection import ObjectDetector, Detection
 from bot.computer_vision.screenshot import screenshot
 
-from bot.game_ai.path_manager import PathManager, edge_list_to_direction_list
+from bot.game_ai.path_manager import PathManager
 from bot.game_ai.position_evaluator import PositionEvaluator
 from bot.game_ai.vector_pilot import VectorPilot
 from bot.computer_vision.level_up import LevelUpDetector
@@ -32,8 +32,6 @@ def main():
 
     stop_event = threading.Event()
     pause_event = threading.Event()
-    bot_thread = threading.Thread(target=bot.follow_pathing_queue, args=[stop_event, pause_event])
-    bot_thread.start()
     
     active_target = None
     pilot = VectorPilot((IMAGE_SIZE[0]//2, IMAGE_SIZE[1]//2))
@@ -43,7 +41,7 @@ def main():
             frame = get_frame_from_game(game_area)
 
             if level_up_detector.is_level_up_screen(frame):
-                print("Level Up detected! Pausing...")
+                # print("Level Up detected! Pausing...")
                 bot.stop_movement()
                 continue
             
@@ -58,14 +56,20 @@ def main():
 
             # Vector Pilot Logic
             fx, fy = pilot.calculate_force(detections, class_names, active_target)
-            keys = pilot.get_input_from_force(fx, fy)
-            bot.add_to_pathing_queue(keys)
+            
+            # Normalize vector to ensure magnitude <= 1.0 (clamped)
+            magnitude = (fx**2 + fy**2)**0.5
+            if magnitude > 1.0:
+                fx /= magnitude
+                fy /= magnitude
+            
+            bot.update_movement(fx, fy)
             
             draw_debug_boxes(frame, drawer, detections, class_names)
 
             # Draw Force Vector
             center = pilot.center
-            end_point = (int(center[0] + fx * 2), int(center[1] + fy * 2)) # Scale visualization
+            end_point = (int(center[0] + fx * 50), int(center[1] + fy * 50)) # Scale visualization
             cv2.arrowedLine(frame, (int(center[0]), int(center[1])), end_point, (0, 255, 0), 3)
 
             # Draw Clustering Debug Info
@@ -97,8 +101,6 @@ def main():
                     drawer.draw_rectangle(frame, color, (x1, y1), (x2, y2))
             
             if active_target:
-                # Scale active_target from width/height (960x608) to display? 
-                # active_target is in 960x608 space already.
                 cv2.circle(frame, (int(active_target[0]), int(active_target[1])), 10, (0, 0, 255), -1)
                 print(f"Target: {active_target}")
 
@@ -106,10 +108,10 @@ def main():
             check_and_update_view_position(key_press, game_area)
             handle_pause(key_press, pause_event)
         except Exception:
-            stop_event.set()
+            bot.stop_movement()
             raise Exception
 
-    stop_event.set()
+    bot.stop_movement()
     cv2.destroyAllWindows()
     return 0
 

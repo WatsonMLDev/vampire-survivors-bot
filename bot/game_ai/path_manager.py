@@ -1,57 +1,39 @@
 import time
-import threading
-from queue import Queue
-from typing import List, Tuple
-from pynput.keyboard import Controller
-
-from bot.utilities import Point
-
+import vgamepad as vg
 
 class PathManager:
-    def __init__(self, player_speed = 320, pixels_moved = 75):
-        self.__path_queue = Queue()
-        self.input = Controller()
-        self.move_time = pixels_moved / player_speed
+    def __init__(self):
+        self.gamepad = vg.VX360Gamepad()
     
-    def follow_pathing_queue(self, stop_event: threading.Event, pause_event: threading.Event):
-        while not stop_event.is_set():
-            if self.__path_queue.qsize() == 0 or pause_event.is_set():
-                time.sleep(self.move_time)
-                continue
-            
-            print(list(self.__path_queue.queue))
-            next_movement = self.__path_queue.get()
-            self.input.press(next_movement)
-            time.sleep(self.move_time)
-            self.input.release(next_movement)
-    
-    def add_to_pathing_queue(self, movements: List[chr]):
-        if self.__path_queue.qsize() != 0:
-            return False
-        for movement in movements:
-            self.__path_queue.put(movement)
+    def update_movement(self, fx: float, fy: float):
+        """
+        Updates the virtual controller stick position based on a normalized force vector.
+        fx, fy: floats roughly in range [-1.0, 1.0] (clamped to 1.0 magnitude outside if needed, 
+                but we clamp to integer range here).
+        """
+        # NitroGen / vgamepad scaling logic
+        # Max integer value for joystick
+        MAX_VAL = 32767.0
+        
+        # Scale to integer range
+        x_val = int(fx * MAX_VAL)
+        y_val = int(fy * MAX_VAL)
+        
+        # Apply integer clamping strictly
+        x_val = max(-32768, min(32767, x_val))
+        y_val = max(-32768, min(32767, y_val))
+        
+        # NitroGen's specific Windows inversion logic: value = -value - 1
+        # This seems to be because Windows Y-axis is inverted relative to standard cartesian or something similar
+        # found in NitroGen/nitrogen/game_env.py
+        y_val_converted = -y_val - 1
+        
+        # Clamp again after inversion just to be safe, though math should hold
+        y_val_converted = max(-32768, min(32767, y_val_converted))
+
+        self.gamepad.left_joystick(x_value=x_val, y_value=y_val_converted)
+        self.gamepad.update()
 
     def stop_movement(self):
-        with self.__path_queue.mutex:
-            self.__path_queue.queue.clear()
-        
-
-def edge_list_to_direction_list(edges: List[Tuple[Point, Point]]):
-    directions = []
-    for edge in edges:
-        point_a, point_b = edge[:2]
-        
-        if point_b[0] - point_a[0] > 0:
-            directions.append('d')
-        elif point_b[0] - point_a[0] < 0:
-            directions.append('a')
-        elif point_b[1] - point_a[1] > 0:
-            directions.append('s')
-        elif point_b[1] - point_a[1] < 0:
-            directions.append('w')
-    return directions
-
-
-if __name__ == "__main__":
-    bot = PathManager()
-    bot.follow_path_queue()
+        self.gamepad.reset()
+        self.gamepad.update()
