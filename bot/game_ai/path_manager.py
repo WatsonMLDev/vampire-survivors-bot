@@ -30,6 +30,10 @@ class PathManager:
             return False
         for movement in movements:
             self.__path_queue.put(movement)
+
+    def stop_movement(self):
+        with self.__path_queue.mutex:
+            self.__path_queue.queue.clear()
         
 
 def edge_list_to_direction_list(edges: List[Tuple[Point, Point]]):

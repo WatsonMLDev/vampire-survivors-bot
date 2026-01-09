@@ -46,23 +46,30 @@ class MovementGraph():
         for i in range(self.width):
             for j in range(self.height):
                 current = (h_border + int(i*h_step), v_border + int(j*v_step))
-                next_pos = (h_border + int((i+1)*h_step), v_border + int(j*v_step))         
-                edge_value = self.evaluator.value(next_pos) - self.evaluator.value(current)
-                       
-                if i < self.width-1:
-                    if i > (self.width/2)-1:
-                        G.add_edge(current, next_pos, weight= edge_value)
-                    else:
-                        G.add_edge(next_pos, current, weight= -edge_value)
-                    
-                next_pos = (h_border + int(i*h_step), v_border + int((j+1)*v_step))	
-                edge_value = self.evaluator.value(current) - self.evaluator.value(next_pos)
                 
-                if j < self.height-1:
-                    if j > (self.height/2)-1:
-                        G.add_edge(current, next_pos, weight = -edge_value)
-                    else:
-                        G.add_edge(next_pos, current, weight = edge_value)
+                # Check Right Neighbor
+                if i < self.width - 1:
+                    next_pos = (h_border + int((i+1)*h_step), v_border + int(j*v_step))
+                    
+                    # Edge Current -> Next (Right)
+                    edge_value_right = self.evaluator.value(next_pos) - self.evaluator.value(current)
+                    G.add_edge(current, next_pos, weight=edge_value_right)
+                    
+                    # Edge Next -> Current (Left)
+                    edge_value_left = self.evaluator.value(current) - self.evaluator.value(next_pos)
+                    G.add_edge(next_pos, current, weight=edge_value_left)
+                
+                # Check Down Neighbor
+                if j < self.height - 1:
+                    next_pos = (h_border + int(i*h_step), v_border + int((j+1)*v_step))
+                    
+                    # Edge Current -> Next (Down)
+                    edge_value_down = self.evaluator.value(next_pos) - self.evaluator.value(current)
+                    G.add_edge(current, next_pos, weight=edge_value_down)
+                    
+                    # Edge Next -> Current (Up)
+                    edge_value_up = self.evaluator.value(current) - self.evaluator.value(next_pos)
+                    G.add_edge(next_pos, current, weight=edge_value_up)
         
         return G
 
