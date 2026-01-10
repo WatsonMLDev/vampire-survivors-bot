@@ -3,21 +3,21 @@ import numpy as np
 import os
 from typing import Dict, Tuple, Optional
 
+from bot.config import config
+
 class UIDetector:
-    def __init__(self, assets_dir: str = "assets", threshold: float = 0.8):
+    def __init__(self, assets_dir: str = "", threshold: float = 0.8):
         self.threshold = threshold
         self.templates: Dict[str, np.ndarray] = {}
+        # Allow assets_dir override, but default to config path
+        if not assets_dir:
+            assets_dir = config.get("paths.assets", "assets")
         self._load_templates(assets_dir)
 
     def _load_templates(self, assets_dir: str):
         """Loads template images from the assets directory."""
-        # Map of State Name -> Filename
-        template_files = {
-            'level_up': 'level_up.png',
-            'pause': 'pause.png',
-            'treasure_start': 'treasure_start.png',
-            'treasure_done': 'treasure_done.png'
-        }
+        # Map of State Name -> Filename loaded from config
+        template_files = config.get("ui_templates")
 
         base_path = os.path.abspath(assets_dir)
         

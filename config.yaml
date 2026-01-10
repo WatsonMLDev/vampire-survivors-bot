@@ -1,0 +1,41 @@
+game:
+  dimensions: [1245, 768]
+  image_size: [960, 608]
+  window_capture:
+    top: 0
+    left: 0
+
+pilot:
+  grid:
+    rows: 3
+    cols: 4
+  forces:
+    attract_target: 150.0
+    attract_rune: 10.0
+    repel_monster: 500.0
+    repulsion_cap: 500.0
+    repulsion_range: 100
+  sticky_target:
+    min_runes: 2
+    better_cluster_multiplier: 1.5
+  center_exclusion_radius_sq: 2500
+
+ui_templates:
+  level_up: "level_up.png"
+  pause: "pause.png"
+  treasure_start: "treasure_start.png"
+  treasure_done: "treasure_done.png"
+  quit: "quit.png"
+
+keybindings:
+  esc: 27
+  q: 113
+  p: 112
+
+paths:
+  model: "model/monster_class.pt"
+  assets: "assets/"
+
+timeouts:
+  treasure_open: 15
+  treasure_step: 0.5

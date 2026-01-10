@@ -1,7 +1,7 @@
 import time
 import vgamepad as vg
 
-class PathManager:
+class InputController:
     def __init__(self):
         print("Creating virtual gamepad... (Drivers initializing)")
         self.gamepad = vg.VX360Gamepad()

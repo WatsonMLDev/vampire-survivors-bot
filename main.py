@@ -9,24 +9,25 @@ from bot.computer_vision.annotations import AnnotationDrawer
 from bot.computer_vision.object_detection import ObjectDetector, Detection
 from bot.computer_vision.screenshot import screenshot
 
-from bot.game_ai.path_manager import PathManager
-from bot.game_ai.position_evaluator import PositionEvaluator
-from bot.game_ai.vector_pilot import VectorPilot
+from bot.pilot import Pilot
 from bot.computer_vision.ui_detector import UIDetector
 from bot.gemini_client import GeminiClient
 from bot.game_state import GameState
+from bot.input_controller import InputController
 from PIL import Image
 import dotenv
 
 dotenv.load_dotenv()
 
-KEY_ESC = 27
-KEY_Q = 113
-KEY_P = 112
-IMAGE_SIZE = (960, 608)
+from bot.config import config
+
+KEY_ESC = config.get("keybindings.esc", 27)
+KEY_Q = config.get("keybindings.q", 113)
+KEY_P = config.get("keybindings.p", 112)
+IMAGE_SIZE = tuple(config.get("game.image_size", (960, 608)))
 
 
-def execute_decision(bot: PathManager, decision: dict):
+def execute_decision(bot: InputController, decision: dict):
     if not decision:
         return
 
@@ -96,7 +97,7 @@ def main():
     print("Initializing ObjectDetector...")
     try:
         drawer = AnnotationDrawer()
-        inference_model = ObjectDetector("model/monster_class.pt")
+        inference_model = ObjectDetector(config.get("paths.model", "model/monster_class.pt"))
     except Exception as e:
         print(f"Failed to load model: {e}")
         return
@@ -104,8 +105,9 @@ def main():
     print("Initializing UIDetector...")
     ui_detector = UIDetector()
     
-    print("Initializing PathManager...")
-    bot = PathManager()
+    print("Initializing InputController...")
+
+    bot = InputController()
     
     # Gemini Integration
     gemini_client = GeminiClient()
@@ -118,14 +120,13 @@ def main():
             game_state.add_weapon(w.strip())
             print(f"Added starting weapon: {w.strip()}")
 
-    game_dimensions = (1245, 768)
+    game_dimensions = tuple(config.get("game.dimensions", (1245, 768)))
     game_area = {"top": 0, "left": 0, "width": game_dimensions[0], "height": game_dimensions[1]}
 
     stop_event = threading.Event()
     pause_event = threading.Event()
     
-    active_target = None
-    pilot = VectorPilot((IMAGE_SIZE[0]//2, IMAGE_SIZE[1]//2))
+    pilot = Pilot((IMAGE_SIZE[0]//2, IMAGE_SIZE[1]//2))
     
     while (key_press := cv2.waitKey(1)) != KEY_ESC:
         try:
@@ -139,8 +140,9 @@ def main():
 
             if ui_state == 'PAUSE':
                 continue # Skip frame
-
-            if ui_state == 'TREASURE_START':
+            elif ui_state == 'QUIT':
+                break
+            elif ui_state == 'TREASURE_START':
                 print("Treasure Detected! Opening...")
                 time.sleep(1) # Wait for animation start
                 bot.press_a()
@@ -149,7 +151,7 @@ def main():
                 # Wait for Treasure Done
                 start_wait = time.time()
                 while True:
-                    if time.time() - start_wait > 15: # Timeout 15s
+                    if time.time() - start_wait > config.get("timeouts.treasure_open", 15): # Timeout 15s
                         print("Treasure opening timed out.")
                         break
                         
@@ -174,117 +176,97 @@ def main():
                     
                     time.sleep(0.5)
                 continue
-
-            if ui_state == 'LEVEL_UP':
+            elif ui_state == 'LEVEL_UP':
                 print("Level Up detected! Pausing and consulting Gemini...")
                 bot.stop_movement()
                 
-                # Convert frame to PIL for Gemini
-                # OpenCV is BGR, PIL needs RGB
-                frame_rgb = cv2.cvtColor(frame_raw, cv2.COLOR_BGR2RGB)
-                pil_image = Image.fromarray(frame_rgb)
+                # # Convert frame to PIL for Gemini
+                # # OpenCV is BGR, PIL needs RGB
+                # frame_rgb = cv2.cvtColor(frame_raw, cv2.COLOR_BGR2RGB)
+                # pil_image = Image.fromarray(frame_rgb)
                 
-                decision = gemini_client.get_decision(pil_image, game_state.to_json())
+                # decision = gemini_client.get_decision(pil_image, game_state.to_json())
                 
-                if decision:
-                    print(f"Gemini Decision: {decision}")
+                # if decision:
+                #     print(f"Gemini Decision: {decision}")
                     
-                    # [NEW] Confirmation Prompt
-                    # user_confirm = input("Press Enter to execute decision (or 'n' to skip/cancel): ")
+                #     # [NEW] Confirmation Prompt
+                #     # user_confirm = input("Press Enter to execute decision (or 'n' to skip/cancel): ")
                     
-                    time.sleep(5)
-                    game_state.log_decision(decision)
-                    execute_decision(bot, decision)
+                #     time.sleep(5)
+                #     game_state.log_decision(decision)
+                #     execute_decision(bot, decision)
                     
-                    # Wait a bit for animation
-                    cv2.waitKey(2000) 
-                else:
-                    print("Gemini failed to decide. Resuming manually (or stuck).")
+                #     # Wait a bit for animation
+                #     cv2.waitKey(2000) 
+                # else:
+                #     print("Gemini failed to decide. Resuming manually (or stuck).")
                 
                 continue
+
+            elif ui_state == 'GAMEPLAY':
+                # --- GAMEPLAY LOGIC ---
+                # Resize frame for Object Detection and Pilot (Model expects IMAGE_SIZE)
+                frame = cv2.resize(frame_raw, IMAGE_SIZE)
             
-            # --- GAMEPLAY LOGIC ---
-            # Resize frame for Object Detection and Pilot (Model expects IMAGE_SIZE)
-            frame = cv2.resize(frame_raw, IMAGE_SIZE)
-            
-            detections, class_names = inference_model.get_detections(frame, 0.6)
-            
-            # [NEW] Filter out detections in the center (Player Self-Detection)
-            # Screen center is approximately IMAGE_SIZE / 2
-            center_x, center_y = IMAGE_SIZE[0] // 2, IMAGE_SIZE[1] // 2
-            filtered_detections = []
-            for d in detections:
-                x1, y1, x2, y2 = d.position
-                cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
-                dist_sq = (cx - center_x)**2 + (cy - center_y)**2
+                detections, class_names = inference_model.get_detections(frame, 0.6)
                 
-                # Ignorance Radius: 50 pixels (squared = 2500)
-                if dist_sq > 2500: 
-                    filtered_detections.append(d)
-            
-            detections = filtered_detections
+                # [NEW] Filter out detections in the center (Player Self-Detection)
+                # Screen center is approximately IMAGE_SIZE / 2
+                center_x, center_y = IMAGE_SIZE[0] // 2, IMAGE_SIZE[1] // 2
+                filtered_detections = []
+                for d in detections:
+                    x1, y1, x2, y2 = d.position
+                    cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
+                    dist_sq = (cx - center_x)**2 + (cy - center_y)**2
+                    
+                    # Ignorance Radius: 50 pixels (squared = 2500)
+                    if dist_sq > config.get("pilot.center_exclusion_radius_sq", 2500): 
+                        filtered_detections.append(d)
+                
+                detections = filtered_detections
 
-            evaluator = PositionEvaluator(detections, class_names, 1, active_target)
-            
-            # Update target for next frame
-            if evaluator.cluster_centroid:
-                 active_target = evaluator.cluster_centroid
+                # Update Pilot State and Calculate Force
+                pilot.update(detections, class_names)
+                fx, fy = pilot.get_force_vector(detections, class_names)
+                
+                # Normalize vector to ensure magnitude <= 1.0 (clamped)
+                magnitude = (fx**2 + fy**2)**0.5
+                if magnitude > 1.0:
+                    fx /= magnitude
+                    fy /= magnitude
+                
+                bot.update_movement(fx, fy)
+                
+                draw_debug_boxes(frame, drawer, detections, class_names)
+
+                # Draw Force Vector
+                center = pilot.center
+                end_point = (int(center[0] + fx * 50), int(center[1] + fy * 50)) # Scale visualization
+                cv2.arrowedLine(frame, (int(center[0]), int(center[1])), end_point, (0, 255, 0), 3)
+
+                # Draw Clustering Debug Info
+                debug_info = pilot.get_debug_info()
+                rows = debug_info['rows']
+                cols = debug_info['cols']
+                w = debug_info['width']
+                h = debug_info['height']
+                target = debug_info['target_bin']
+                active_target = debug_info['target_centroid']
+                
+                
+                scale_x = IMAGE_SIZE[0] / w
+                scale_y = IMAGE_SIZE[1] / h
+                
+                if active_target:
+                    cv2.circle(frame, (int(active_target[0]), int(active_target[1])), 10, (0, 0, 255), -1)
+                    print(f"Target: {active_target}")
+
+                cv2.imshow("Model Vision", frame)
+                check_and_update_view_position(key_press, game_area)
+                handle_pause(key_press, pause_event)
             else:
-                 active_target = None
-
-            # Vector Pilot Logic
-            fx, fy = pilot.calculate_force(detections, class_names, active_target)
-            
-            # Normalize vector to ensure magnitude <= 1.0 (clamped)
-            magnitude = (fx**2 + fy**2)**0.5
-            if magnitude > 1.0:
-                fx /= magnitude
-                fy /= magnitude
-            
-            bot.update_movement(fx, fy)
-            
-            draw_debug_boxes(frame, drawer, detections, class_names)
-
-            # Draw Force Vector
-            center = pilot.center
-            end_point = (int(center[0] + fx * 50), int(center[1] + fy * 50)) # Scale visualization
-            cv2.arrowedLine(frame, (int(center[0]), int(center[1])), end_point, (0, 255, 0), 3)
-
-            # Draw Clustering Debug Info
-            cluster_info = evaluator.get_clustering_info()
-            rows = cluster_info['rows']
-            cols = cluster_info['cols']
-            w = cluster_info['width']
-            h = cluster_info['height']
-            target = cluster_info['target_bin']
-            
-            
-            scale_x = IMAGE_SIZE[0] / w
-            scale_y = IMAGE_SIZE[1] / h
-            
-            for r in range(rows):
-                for c in range(cols):
-                    x1 = int(c * (w / cols) * scale_x)
-                    y1 = int(r * (h / rows) * scale_y)
-                    x2 = int((c+1) * (w / cols) * scale_x)
-                    y2 = int((r+1) * (h / rows) * scale_y)
-                    
-                    color = (255, 255, 255) # White grid
-                    thickness = 1
-                    
-                    if target and target == (r, c):
-                        color = (0, 255, 0) # Green for target
-                        thickness = 3
-                        
-                    drawer.draw_rectangle(frame, color, (x1, y1), (x2, y2))
-            
-            if active_target:
-                cv2.circle(frame, (int(active_target[0]), int(active_target[1])), 10, (0, 0, 255), -1)
-                print(f"Target: {active_target}")
-
-            cv2.imshow("Model Vision", frame)
-            check_and_update_view_position(key_press, game_area)
-            handle_pause(key_press, pause_event)
+                print("Unknown UI State: ", ui_state)
         except Exception:
             bot.stop_movement()
             raise Exception

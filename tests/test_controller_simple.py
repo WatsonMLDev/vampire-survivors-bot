@@ -5,7 +5,7 @@ import os
 # Add project root to path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from bot.game_ai.path_manager import PathManager
+from bot.input_controller import InputController
 
 def test_simple_input():
     print("---------------------------------------------------------")
@@ -13,7 +13,7 @@ def test_simple_input():
     print("---------------------------------------------------------")
     print("Initializing controller... (Wait 3s)")
     try:
-        bot = PathManager()
+        bot = InputController()
     except Exception as e:
         print(f"FAILED to initialize controller: {e}")
         return
