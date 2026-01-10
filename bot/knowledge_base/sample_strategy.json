@@ -1,0 +1,126 @@
+[
+    {
+        "build_name": "The 'God Slayer' Build (Red Death / Endless)",
+        "best_for": "Killing the Reaper (30 min mark) and Endless Mode survival.",
+        "core_weapons": [
+            "Laurel (Evolves to Crimson Shroud)",
+            "Clock Lancet (Evolves to Infinite Corridor)",
+            "Pentagram (Evolves to Gorgeous Moon)",
+            "Santa Water (Evolves to La Borra)",
+            "Lightning Ring (Evolves to Thunder Loop)",
+            "Victory Sword (Evolves to Sole Solution)"
+        ],
+        "required_passives": [
+            "Metaglio Left",
+            "Metaglio Right",
+            "Silver Ring",
+            "Gold Ring",
+            "Attractorb",
+            "Duplicator",
+            "Crown",
+            "Torrona's Box"
+        ],
+        "strategy": "This build focuses on breaking the damage cap with Infinite Corridor and surviving lethal damage with Crimson Shroud."
+    },
+    {
+        "build_name": "The 'Holy Trinity' Area Denial Build",
+        "best_for": "Safe clearing, high knockback, standing still (AFK farming).",
+        "core_weapons": [
+            "Santa Water (Evolves to La Borra)",
+            "King Bible (Evolves to Unholy Vespers)",
+            "Garlic (Evolves to Soul Eater)",
+            "Magic Wand (Evolves to Holy Wand)",
+            "Lightning Ring (Evolves to Thunder Loop)",
+            "Axe (Evolves to Death Spiral)"
+        ],
+        "required_passives": [
+            "Attractorb",
+            "Spellbinder",
+            "Pummarola",
+            "Empty Tome",
+            "Duplicator",
+            "Candelabrador"
+        ]
+    },
+    {
+        "build_name": "The 'No Future' Bouncy DPS Build",
+        "best_for": "Enclosed maps (Library/Tower) where projectiles bounce.",
+        "core_weapons": [
+            "Runetracer (Evolves to NO FUTURE)",
+            "Cross (Evolves to Heaven Sword)",
+            "Bone",
+            "Cherry Bomb",
+            "Phiera Der Tuphello (Union to Phieraggi)",
+            "Eight The Sparrow (Union to Phieraggi)"
+        ],
+        "required_passives": [
+            "Armor",
+            "Clover",
+            "Tirajisú",
+            "Bracer",
+            "Spinach",
+            "Empty Tome"
+        ]
+    },
+    {
+        "build_name": "The 'Gunslinger' Projectile Spam Build",
+        "best_for": "Screen clearing with directional fire.",
+        "core_weapons": [
+            "Knife (Evolves to Thousand Edge)",
+            "Magic Wand (Evolves to Holy Wand)",
+            "Fire Wand (Evolves to Hellfire)",
+            "Whip (Evolves to Bloody Tear)",
+            "Axe (Evolves to Death Spiral)",
+            "Lightning Ring (Evolves to Thunder Loop)"
+        ],
+        "required_passives": [
+            "Bracer",
+            "Empty Tome",
+            "Spinach",
+            "Hollow Heart",
+            "Candelabrador",
+            "Duplicator"
+        ]
+    },
+    {
+        "build_name": "The 'Vandalier' Union Build",
+        "best_for": "Maximizing free slots (Unions free up weapon slots for extra items).",
+        "core_weapons": [
+            "Peachone (Unions into Vandalier)",
+            "Ebony Wings (Unions into Vandalier)",
+            "Phiera Der Tuphello (Unions into Phieraggi)",
+            "Eight The Sparrow (Unions into Phieraggi)",
+            "Gatti Amari (Evolves to Vicious Hunger)",
+            "Song of Mana (Evolves to Mannajja)"
+        ],
+        "required_passives": [
+            "Tirajisú",
+            "Stone Mask",
+            "Skull O'Maniac",
+            "Empty Tome",
+            "Spinach"
+        ]
+    },
+    {
+        "build_name": "DLC Special (Moonspell/Foscari)",
+        "best_for": "Owners of the DLC looking for high-power scaling.",
+        "core_weapons": [
+            "Silver Wind (Evolves to Festive Winds)",
+            "Four Seasons (Evolves to Godai Shuffle)",
+            "Night Sword (Evolves to Muramasa)",
+            "Summon Night (Evolves to Echo Night)",
+            "Mirage Robe (Evolves to J'Odore)",
+            "Flash Arrow (Evolves to Millionaire)"
+        ],
+        "required_passives": [
+            "Pummarola",
+            "Spinach",
+            "Candelabrador",
+            "Stone Mask",
+            "Duplicator",
+            "Attractorb",
+            "Bracer",
+            "Clover"
+        ]
+    }
+]

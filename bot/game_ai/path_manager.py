@@ -3,7 +3,10 @@ import vgamepad as vg
 
 class PathManager:
     def __init__(self):
+        print("Creating virtual gamepad... (Drivers initializing)")
         self.gamepad = vg.VX360Gamepad()
+        time.sleep(3) # Wait for driver to connect
+        print("Virtual gamepad ready.")
     
     def update_movement(self, fx: float, fy: float):
         """
@@ -37,3 +40,48 @@ class PathManager:
     def stop_movement(self):
         self.gamepad.reset()
         self.gamepad.update()
+
+    def press_a(self):
+        """Presses and releases the A button."""
+        self.gamepad.press_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_A)
+        self.gamepad.update()
+        time.sleep(0.3)
+        self.gamepad.release_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_A)
+        self.gamepad.update()
+        time.sleep(0.3)
+
+    def press_dpad_up(self):
+        """Presses and releases D-pad Up."""
+        self.gamepad.press_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_UP)
+        self.gamepad.update()
+        time.sleep(0.3)
+        self.gamepad.release_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_UP)
+        self.gamepad.update()
+        time.sleep(0.3)
+
+    def press_dpad_down(self):
+        """Presses and releases D-pad Down."""
+        self.gamepad.press_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_DOWN)
+        self.gamepad.update()
+        time.sleep(0.3)
+        self.gamepad.release_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_DOWN)
+        self.gamepad.update()
+        time.sleep(0.3)
+
+    def press_dpad_left(self):
+        """Presses and releases D-pad Left."""
+        self.gamepad.press_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_LEFT)
+        self.gamepad.update()
+        time.sleep(0.3)
+        self.gamepad.release_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_LEFT)
+        self.gamepad.update()
+        time.sleep(0.3)
+
+    def press_dpad_right(self):
+        """Presses and releases D-pad Right."""
+        self.gamepad.press_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_RIGHT)
+        self.gamepad.update()
+        time.sleep(0.3)
+        self.gamepad.release_button(button=vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_RIGHT)
+        self.gamepad.update()
+        time.sleep(0.3)

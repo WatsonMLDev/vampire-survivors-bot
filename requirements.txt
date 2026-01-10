@@ -9,3 +9,7 @@ mss
 PyAutoGUI
 pynput
 vgamepad
+google-genai
+requests
+beautifulsoup4
+python-dotenv

@@ -1,0 +1,622 @@
+[
+  {
+    "base_weapon": "Whip",
+    "passive_item": "Hollow Heart",
+    "evolution": "Bloody Tear"
+  },
+  {
+    "base_weapon": "Magic Wand",
+    "passive_item": "Empty Tome",
+    "evolution": "Holy Wand"
+  },
+  {
+    "base_weapon": "Knife",
+    "passive_item": "Bracer",
+    "evolution": "Thousand Edge"
+  },
+  {
+    "base_weapon": "Axe",
+    "passive_item": "Candelabrador",
+    "evolution": "Death Spiral"
+  },
+  {
+    "base_weapon": "Cross",
+    "passive_item": "Clover",
+    "evolution": "Heaven Sword"
+  },
+  {
+    "base_weapon": "King Bible",
+    "passive_item": "Spellbinder",
+    "evolution": "Unholy Vespers"
+  },
+  {
+    "base_weapon": "Fire Wand",
+    "passive_item": "Spinach",
+    "evolution": "Hellfire"
+  },
+  {
+    "base_weapon": "Garlic",
+    "passive_item": "Pummarola",
+    "evolution": "Soul Eater"
+  },
+  {
+    "base_weapon": "Santa Water",
+    "passive_item": "Attractorb",
+    "evolution": "La Borra"
+  },
+  {
+    "base_weapon": "Runetracer",
+    "passive_item": "Armor",
+    "evolution": "NO FUTURE"
+  },
+  {
+    "base_weapon": "Lightning Ring",
+    "passive_item": "Duplicator",
+    "evolution": "Thunder Loop"
+  },
+  {
+    "base_weapon": "Pentagram",
+    "passive_item": "Crown",
+    "evolution": "Gorgeous Moon"
+  },
+  {
+    "base_weapon": "Gatti Amari",
+    "passive_item": "Stone Mask",
+    "evolution": "Vicious Hunger"
+  },
+  {
+    "base_weapon": "Song of Mana",
+    "passive_item": "Skull O'Maniac",
+    "evolution": "Mannajja"
+  },
+  {
+    "base_weapon": "Shadow Pinion",
+    "passive_item": "Wings",
+    "evolution": "Valkyrie Turner"
+  },
+  {
+    "base_weapon": "Flames of Misspell",
+    "passive_item": "Max level:Torrona's Box",
+    "evolution": "Ashes of Muspell"
+  },
+  {
+    "base_weapon": "Glass Fandango",
+    "passive_item": "Max level:Wings",
+    "evolution": "Celestial Voulge"
+  },
+  {
+    "base_weapon": "Clock Lancet",
+    "passive_item": "Max level:Silver RingGold Ring",
+    "evolution": "Infinite Corridor"
+  },
+  {
+    "base_weapon": "Laurel",
+    "passive_item": "Max level:Metaglio LeftMetaglio Right",
+    "evolution": "Crimson Shroud"
+  },
+  {
+    "base_weapon": "Phas3r",
+    "passive_item": "Max level:Empty Tome",
+    "evolution": "Photonstorm"
+  },
+  {
+    "base_weapon": "Pako Battiliar",
+    "passive_item": "Max level:Hollow Heart",
+    "evolution": "Mazo Familiar"
+  },
+  {
+    "base_weapon": "Santa Javelin",
+    "passive_item": "Max level:Clover",
+    "evolution": "Seraphic Cry"
+  },
+  {
+    "base_weapon": "Phiera Der TuphelloEight The Sparrow",
+    "passive_item": "Tirajis\u00fa",
+    "evolution": "Phieraggi"
+  },
+  {
+    "base_weapon": "Peachone",
+    "passive_item": "Ebony Wings",
+    "evolution": "Vandalier"
+  },
+  {
+    "base_weapon": "Vento Sacro",
+    "passive_item": "Bloody Tear",
+    "evolution": "Fuwalafuwaloo"
+  },
+  {
+    "base_weapon": "Victory Sword",
+    "passive_item": "Max level:Torrona's Box",
+    "evolution": "Sole Solution"
+  },
+  {
+    "base_weapon": "Bone",
+    "passive_item": "Mortaccio",
+    "evolution": "Chaos Malachite"
+  },
+  {
+    "base_weapon": "Cherry Bomb",
+    "passive_item": "Cavallo",
+    "evolution": "Chaos Rosalia"
+  },
+  {
+    "base_weapon": "Celestial Dusting",
+    "passive_item": "O'Sole",
+    "evolution": "Chaos Altemanna"
+  },
+  {
+    "base_weapon": "Silver Wind",
+    "passive_item": "Max level:Pummarola",
+    "evolution": "Festive Winds"
+  },
+  {
+    "base_weapon": "Four Seasons",
+    "passive_item": "Max level:Candelabrador",
+    "evolution": "Godai Shuffle"
+  },
+  {
+    "base_weapon": "Summon Night",
+    "passive_item": "Max level:Duplicator",
+    "evolution": "Echo Night"
+  },
+  {
+    "base_weapon": "Mirage Robe",
+    "passive_item": "Max level:Attractorb",
+    "evolution": "J'Odore"
+  },
+  {
+    "base_weapon": "Night Sword",
+    "passive_item": "Max level:Stone Mask",
+    "evolution": "Muramasa"
+  },
+  {
+    "base_weapon": "Mille Bolle Blu",
+    "passive_item": "Max level:Spellbinder",
+    "evolution": "Boo Roo Boolle"
+  },
+  {
+    "base_weapon": "SpellStringSpellStreamSpellStrike",
+    "passive_item": "",
+    "evolution": "SpellStrom"
+  },
+  {
+    "base_weapon": "Eskizzibur",
+    "passive_item": "Max level:Armor",
+    "evolution": "Legionnaire"
+  },
+  {
+    "base_weapon": "Flash Arrow",
+    "passive_item": "Max level:Bracer",
+    "evolution": "Millionaire"
+  },
+  {
+    "base_weapon": "Prismatic Missile",
+    "passive_item": "Max level:Crown",
+    "evolution": "Luminaire"
+  },
+  {
+    "base_weapon": "Shadow Servant",
+    "passive_item": "Max level:Skull O'Maniac",
+    "evolution": "Ophion"
+  },
+  {
+    "base_weapon": "Report!",
+    "passive_item": "Max level:Mini Crewmate",
+    "evolution": "Emergency Meeting"
+  },
+  {
+    "base_weapon": "Lucky Swipe",
+    "passive_item": "Max level:Mini Engineer",
+    "evolution": "Crossed Wires"
+  },
+  {
+    "base_weapon": "Lifesign Scan",
+    "passive_item": "Max level:Mini Ghost",
+    "evolution": "Paranormal Scan"
+  },
+  {
+    "base_weapon": "Just Vent",
+    "passive_item": "Max level:Mini Shapeshifter",
+    "evolution": "Unjust Ejection"
+  },
+  {
+    "base_weapon": "Clear Debris",
+    "passive_item": "Max level:Mini Guardian",
+    "evolution": "Clear Asteroids"
+  },
+  {
+    "base_weapon": "Sharp Tongue",
+    "passive_item": "Max level:Mini Impostor",
+    "evolution": "Impostongue"
+  },
+  {
+    "base_weapon": "Science Rocks",
+    "passive_item": "Max level:Mini Scientist",
+    "evolution": "Rocket Science"
+  },
+  {
+    "base_weapon": "Short Gun",
+    "passive_item": "Weapon Power-Up",
+    "evolution": "Bracer"
+  },
+  {
+    "base_weapon": "Spread Shot",
+    "passive_item": "Weapon Power-Up",
+    "evolution": "Empty Tome"
+  },
+  {
+    "base_weapon": "C-U-Laser",
+    "passive_item": "Weapon Power-Up",
+    "evolution": "Tirajis\u00fa"
+  },
+  {
+    "base_weapon": "Firearm",
+    "passive_item": "Weapon Power-Up",
+    "evolution": "Candelabrador"
+  },
+  {
+    "base_weapon": "Sonic Bloom",
+    "passive_item": "Weapon Power-Up",
+    "evolution": "Armor"
+  },
+  {
+    "base_weapon": "Homing Miss",
+    "passive_item": "Weapon Power-Up",
+    "evolution": "Duplicator"
+  },
+  {
+    "base_weapon": "Diver Mines",
+    "passive_item": "Weapon Power-Up",
+    "evolution": "Attractorb"
+  },
+  {
+    "base_weapon": "Blade Crossbow",
+    "passive_item": "Weapon Power-Up",
+    "evolution": "Clover"
+  },
+  {
+    "base_weapon": "Prism Lass",
+    "passive_item": "Weapon Power-Up",
+    "evolution": "Wings"
+  },
+  {
+    "base_weapon": "Metal Claw",
+    "passive_item": "Weapon Power-Up",
+    "evolution": "Hollow Heart"
+  },
+  {
+    "base_weapon": "Alchemy Whip",
+    "passive_item": "Tirajis\u00fa",
+    "evolution": "Vampire Killer"
+  },
+  {
+    "base_weapon": "Wind Whip",
+    "passive_item": "Crown",
+    "evolution": "Spirit Tornado Tip"
+  },
+  {
+    "base_weapon": "Platinum Whip",
+    "passive_item": "Clover",
+    "evolution": "Cross Crasher Tip"
+  },
+  {
+    "base_weapon": "Dragon Water Whip",
+    "passive_item": "Attractorb",
+    "evolution": "Hydrostormer Tip"
+  },
+  {
+    "base_weapon": "Sonic Whip",
+    "passive_item": "Skull O'Maniac",
+    "evolution": "Crissaegrim Tip"
+  },
+  {
+    "base_weapon": "Jet Black Whip",
+    "passive_item": "Stone Mask",
+    "evolution": "Mormegil Tip"
+  },
+  {
+    "base_weapon": "Vibhuti Whip",
+    "passive_item": "Candelabrador",
+    "evolution": "Daybreaker Tip"
+  },
+  {
+    "base_weapon": "Vanitas Whip",
+    "passive_item": "Hollow Heart",
+    "evolution": "Aurablaster Tip"
+  },
+  {
+    "base_weapon": "Shuriken",
+    "passive_item": "Empty Tome",
+    "evolution": "Yagyu Shuriken"
+  },
+  {
+    "base_weapon": "Curved Knife",
+    "passive_item": "Bracer",
+    "evolution": "Bwaka Knife"
+  },
+  {
+    "base_weapon": "Javelin",
+    "passive_item": "Spellbinder",
+    "evolution": "Long Inus"
+  },
+  {
+    "base_weapon": "Discus",
+    "passive_item": "Max level:Parm Aegis",
+    "evolution": "Stellar Blade"
+  },
+  {
+    "base_weapon": "Iron Ball",
+    "passive_item": "Armor",
+    "evolution": "Wrecking Ball"
+  },
+  {
+    "base_weapon": "Silver Revolver",
+    "passive_item": "Karoma's Mana",
+    "evolution": "Jewel Gun"
+  },
+  {
+    "base_weapon": "Hand Grenade",
+    "passive_item": "Max level:Candelabrador",
+    "evolution": "The RPG"
+  },
+  {
+    "base_weapon": "Wine Glass",
+    "passive_item": "Max level:Tirajis\u00fa",
+    "evolution": "Meal Ticket"
+  },
+  {
+    "base_weapon": "Raging Fire",
+    "passive_item": "Max level:Spinach",
+    "evolution": "Salamender"
+  },
+  {
+    "base_weapon": "Ice Fang",
+    "passive_item": "Max level:Spellbinder",
+    "evolution": "Cocytus"
+  },
+  {
+    "base_weapon": "Gale Force",
+    "passive_item": "Max level:Bracer",
+    "evolution": "Pneuma Tempestas"
+  },
+  {
+    "base_weapon": "Rock Riot",
+    "passive_item": "Max level:Stone Mask",
+    "evolution": "Gemma Torpor"
+  },
+  {
+    "base_weapon": "Fulgur",
+    "passive_item": "Max level:Duplicator",
+    "evolution": "Tenebris Tonitrus"
+  },
+  {
+    "base_weapon": "Keremet Bubbles",
+    "passive_item": "Max level:Armor",
+    "evolution": "Keremet Morbus"
+  },
+  {
+    "base_weapon": "Hex",
+    "passive_item": "Max level:Skull O'Maniac",
+    "evolution": "Nightmare"
+  },
+  {
+    "base_weapon": "Refectio",
+    "passive_item": "Max level:Clover",
+    "evolution": "Sanctuary"
+  },
+  {
+    "base_weapon": "Mace",
+    "passive_item": "Max level:Hollow Heart",
+    "evolution": "Stamazza"
+  },
+  {
+    "base_weapon": "Star Flail",
+    "passive_item": "Max level:Pummarola",
+    "evolution": "Moon Rod"
+  },
+  {
+    "base_weapon": "Alucard Spear",
+    "passive_item": "Wings",
+    "evolution": "Thunderbolt Spear"
+  },
+  {
+    "base_weapon": "Trident",
+    "passive_item": "Max level:Duplicator",
+    "evolution": "Gungnir-Souris"
+  },
+  {
+    "base_weapon": "Iron Shield",
+    "passive_item": "Parm Aegis",
+    "evolution": "Dark Iron Shield"
+  },
+  {
+    "base_weapon": "Guardian's Targe",
+    "passive_item": "Pummarola",
+    "evolution": "Sacred Beasts Tower Shield"
+  },
+  {
+    "base_weapon": "Tyrfing",
+    "passive_item": "Spinach",
+    "evolution": "Rune Sword"
+  },
+  {
+    "base_weapon": "Alucart Sworb",
+    "passive_item": "",
+    "evolution": "Alucard Swords"
+  },
+  {
+    "base_weapon": "Alucard Swords",
+    "passive_item": "6passives&evolutions",
+    "evolution": "Alucard Shield"
+  },
+  {
+    "base_weapon": "Confodere",
+    "passive_item": "",
+    "evolution": "Vol Confodere"
+  },
+  {
+    "base_weapon": "Vol Confodere",
+    "passive_item": "",
+    "evolution": "Melio Confodere"
+  },
+  {
+    "base_weapon": "Globus",
+    "passive_item": "Max level:Empty Tome",
+    "evolution": "Nitesco"
+  },
+  {
+    "base_weapon": "Optical Shot",
+    "passive_item": "Max level:Karoma's Mana",
+    "evolution": "Acerbatus"
+  },
+  {
+    "base_weapon": "Centralis CustosDextro CustosSinestro Custos",
+    "passive_item": "",
+    "evolution": "Trinum Custodem"
+  },
+  {
+    "base_weapon": "Dominus AgonyDominus AngerDominus Hatred",
+    "passive_item": "",
+    "evolution": "Power of Sire"
+  },
+  {
+    "base_weapon": "Sonic Dash",
+    "passive_item": "Max level:Wings",
+    "evolution": "Rapidus Fio"
+  },
+  {
+    "base_weapon": "Luminatio",
+    "passive_item": "Max level:Crown",
+    "evolution": "Vol Luminatio"
+  },
+  {
+    "base_weapon": "Umbra",
+    "passive_item": "Max level:Attractorb",
+    "evolution": "Vol Umbra"
+  },
+  {
+    "base_weapon": "Vol LuminatioVol Umbra",
+    "passive_item": "",
+    "evolution": "Universitas"
+  },
+  {
+    "base_weapon": "Endo GearsPeri PendulumMyo LiftEpi Head",
+    "passive_item": "",
+    "evolution": "Clock Tower"
+  },
+  {
+    "base_weapon": "Fleuret",
+    "passive_item": "",
+    "evolution": "Dress Sword"
+  },
+  {
+    "base_weapon": "Dress Sword",
+    "passive_item": "",
+    "evolution": "Espada Ropera"
+  },
+  {
+    "base_weapon": "Town Sword",
+    "passive_item": "",
+    "evolution": "Lordstar"
+  },
+  {
+    "base_weapon": "Lordstar",
+    "passive_item": "",
+    "evolution": "Dayblade"
+  },
+  {
+    "base_weapon": "Splashers",
+    "passive_item": "Spellbinder",
+    "evolution": "Pursuant Blades"
+  },
+  {
+    "base_weapon": "Flamberge",
+    "passive_item": "",
+    "evolution": "Zweihander"
+  },
+  {
+    "base_weapon": "Zweihander",
+    "passive_item": "",
+    "evolution": "Galatyn"
+  },
+  {
+    "base_weapon": "Punch",
+    "passive_item": "",
+    "evolution": "Pressure Point"
+  },
+  {
+    "base_weapon": "Pressure Point",
+    "passive_item": "",
+    "evolution": "Gilded Hand"
+  },
+  {
+    "base_weapon": "Kick",
+    "passive_item": "Pummarola",
+    "evolution": "Triable Kick"
+  },
+  {
+    "base_weapon": "Saber Machine Gun",
+    "passive_item": "",
+    "evolution": "Hecaton Machine Gun"
+  },
+  {
+    "base_weapon": "Hecaton Machine Gun",
+    "passive_item": "",
+    "evolution": "Divergence"
+  },
+  {
+    "base_weapon": "Super Missile",
+    "passive_item": "",
+    "evolution": "Hydra Cannon"
+  },
+  {
+    "base_weapon": "Hydra Cannon",
+    "passive_item": "",
+    "evolution": "Hyperion Bazooka"
+  },
+  {
+    "base_weapon": "Eagle Gun",
+    "passive_item": "Spinach",
+    "evolution": "Pendragon"
+  },
+  {
+    "base_weapon": "Khukuri",
+    "passive_item": "Parm Aegis",
+    "evolution": "Jetstream"
+  },
+  {
+    "base_weapon": "Twin Dragon",
+    "passive_item": "Karoma's Mana",
+    "evolution": "Gekkabijin"
+  },
+  {
+    "base_weapon": "Bullova",
+    "passive_item": "Max level:Skull O'Maniac",
+    "evolution": "Falconwind"
+  },
+  {
+    "base_weapon": "Sanguine Star",
+    "passive_item": "Stone Mask",
+    "evolution": "Blood Chalice"
+  },
+  {
+    "base_weapon": "Glaive",
+    "passive_item": "",
+    "evolution": "Feather Spear"
+  },
+  {
+    "base_weapon": "Feather Spear",
+    "passive_item": "",
+    "evolution": "Lohengrin"
+  },
+  {
+    "base_weapon": "Spirit Rings",
+    "passive_item": "Max level:5 passives",
+    "evolution": "Rings of Calamity"
+  },
+  {
+    "base_weapon": "Emerald Rapture",
+    "passive_item": "Crown",
+    "evolution": "Emerald Wave"
+  }
+]
