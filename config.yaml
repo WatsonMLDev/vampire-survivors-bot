@@ -12,9 +12,10 @@ pilot:
   forces:
     attract_target: 150.0
     attract_rune: 10.0
-    repel_monster: 500.0
-    repulsion_cap: 500.0
+    repel_monster: 1000.0  # Doubled
+    repulsion_cap: 2000.0  # Quadrupled to allow stronger emergency vectors
     repulsion_range: 100
+    critical_repulsion_range: 50 # New: If closer than this, ignore attraction
   sticky_target:
     min_runes: 2
     better_cluster_multiplier: 1.5
@@ -26,6 +27,7 @@ ui_templates:
   treasure_start: "treasure_start.png"
   treasure_done: "treasure_done.png"
   quit: "quit.png"
+  revive: "revive.png"
 
 keybindings:
   esc: 27

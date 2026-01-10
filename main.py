@@ -142,6 +142,11 @@ def main():
                 continue # Skip frame
             elif ui_state == 'QUIT':
                 break
+            elif ui_state == 'REVIVE':
+                print("Revive Detected! Opening...")
+                time.sleep(1) # Wait for animation start
+                bot.press_a()
+                time.sleep(.5)
             elif ui_state == 'TREASURE_START':
                 print("Treasure Detected! Opening...")
                 time.sleep(1) # Wait for animation start

@@ -29,6 +29,8 @@ class Pilot:
         self.repulsion_range = config.get("pilot.forces.repulsion_range", 100)
         self.repulsion_cap = config.get("pilot.forces.repulsion_cap", 500.0)
 
+        self.critical_repulsion_range = config.get("pilot.forces.critical_repulsion_range", 50)
+
     def update(self, detections: List[Detection], class_names: Dict[int, str]):
         """
         Updates internal state based on new frame detections.
@@ -41,8 +43,23 @@ class Pilot:
         """
         fx, fy = 0.0, 0.0
         
-        # 1. Attraction: Target Cluster
-        if self.target_cluster_centroid:
+        # Check for critical danger first
+        monsters = [x.position for x in detections if class_names[x.label] == "monster"]
+        in_critical_danger = False
+        
+        for monster_rect in monsters:
+            mx = (monster_rect[0] + monster_rect[2]) / 2
+            my = (monster_rect[1] + monster_rect[3]) / 2
+            dx = self.center[0] - mx
+            dy = self.center[1] - my
+            dist = math.sqrt(dx*dx + dy*dy)
+            
+            if dist < self.critical_repulsion_range:
+                in_critical_danger = True
+                break
+        
+        # 1. Attraction: Target Cluster (Only if safe)
+        if not in_critical_danger and self.target_cluster_centroid:
             dx = self.target_cluster_centroid[0] - self.center[0]
             dy = self.target_cluster_centroid[1] - self.center[1]
             dist = math.sqrt(dx*dx + dy*dy)
@@ -51,21 +68,21 @@ class Pilot:
                 fx += (dx / dist) * self.k_attract_target
                 fy += (dy / dist) * self.k_attract_target
 
-        # 2. Attraction: Individual Runes
-        runes = [x.position for x in detections if class_names[x.label] == "rune"]
-        for r_rect in runes:
-            rx = (r_rect[0] + r_rect[2]) / 2
-            ry = (r_rect[1] + r_rect[3]) / 2
-            dx = rx - self.center[0]
-            dy = ry - self.center[1]
-            dist = math.sqrt(dx*dx + dy*dy)
-            
-            if dist > 0:
-                fx += (dx / dist) * self.k_attract_rune
-                fy += (dy / dist) * self.k_attract_rune
+        # 2. Attraction: Individual Runes (Only if safe)
+        if not in_critical_danger:
+            runes = [x.position for x in detections if class_names[x.label] == "rune"]
+            for r_rect in runes:
+                rx = (r_rect[0] + r_rect[2]) / 2
+                ry = (r_rect[1] + r_rect[3]) / 2
+                dx = rx - self.center[0]
+                dy = ry - self.center[1]
+                dist = math.sqrt(dx*dx + dy*dy)
+                
+                if dist > 0:
+                    fx += (dx / dist) * self.k_attract_rune
+                    fy += (dy / dist) * self.k_attract_rune
                 
         # 3. Repulsion: Monsters
-        monsters = [x.position for x in detections if class_names[x.label] == "monster"]
         
         repel_fx, repel_fy = 0.0, 0.0
         for monster_rect in monsters:
@@ -77,7 +94,13 @@ class Pilot:
             dist = math.sqrt(dx*dx + dy*dy)
             
             if 0 < dist < self.repulsion_range:
+                # Linear falloff: 1.0 at dist=0, 0.0 at dist=range
                 force = self.k_repel_monster * (1 - (dist / self.repulsion_range))
+                
+                # Critical boost: If inside critical range, multiply force to ensure escape
+                if dist < self.critical_repulsion_range:
+                    force *= 2.0 
+                    
                 repel_fx += (dx / dist) * force
                 repel_fy += (dy / dist) * force
 
