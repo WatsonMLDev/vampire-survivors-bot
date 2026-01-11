@@ -5,10 +5,26 @@ game:
     top: 0
     left: 0
 
+capture:
+  enabled: true
+  output_dir: "training_data"
+  fps: 60
+  window_name: "Vampire Survivors"
+
+debug_recording:
+  enabled: true
+  output_dir: "training_data"
+  fps: 30
+
+llm:
+  # Format: provider/model_name (e.g., gemini/gemini-1.5-flash, ollama/llama2, openai/gpt-4)
+  # For LM Studio (OpenAI compatible), prepend 'openai/' to the model name
+  model: "openai/zai-org/glm-4.6v-flash"
+  api_key_env_var: "GOOGLE_API_KEY" # Not strictly used for local, but kept for structure
+  # Optional: Base URL for local providers (e.g., "http://localhost:1234/v1" for LM Studio)
+  api_base: "http://localhost:1234/v1" 
+
 pilot:
-  grid:
-    rows: 3
-    cols: 4
   forces:
     attract_target: 150.0
     attract_rune: 10.0
@@ -39,5 +55,5 @@ paths:
   assets: "assets/"
 
 timeouts:
-  treasure_open: 15
+  treasure_open: 30
   treasure_step: 0.5

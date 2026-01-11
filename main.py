@@ -4,6 +4,7 @@ import pyautogui
 import threading
 from typing import List, Tuple
 import time
+import os
 
 from bot.computer_vision.annotations import AnnotationDrawer
 from bot.computer_vision.object_detection import ObjectDetector, Detection
@@ -11,9 +12,10 @@ from bot.computer_vision.screenshot import screenshot
 
 from bot.pilot import Pilot
 from bot.computer_vision.ui_detector import UIDetector
-from bot.gemini_client import GeminiClient
+from bot.llm_client import LLMClient
 from bot.game_state import GameState
 from bot.input_controller import InputController
+from bot.recorder import Recorder
 from PIL import Image
 import dotenv
 
@@ -82,7 +84,7 @@ def execute_decision(bot: InputController, decision: dict):
             
         bot.press_a() # Confirm Banish on target slot
 
-    print(f"Executed: {decision}")
+    # print(f"Executed: {decision}") # Redundant, logged by llm_client
 
 
 def main():
@@ -109,9 +111,13 @@ def main():
 
     bot = InputController()
     
-    # Gemini Integration
-    gemini_client = GeminiClient()
+    # LLM Integration
+    llm_client = LLMClient()
     game_state = GameState()
+
+    # Data Recorder
+    recorder = Recorder()
+    recorder.start()
     
     # [NEW] Manual Start Weapon Input
     
@@ -128,6 +134,21 @@ def main():
     
     pilot = Pilot((IMAGE_SIZE[0]//2, IMAGE_SIZE[1]//2))
     
+    # [NEW] Initialize Debug Recorder
+    debug_writer = None
+    if config.get("debug_recording.enabled", False):
+        output_dir = config.get("debug_recording.output_dir", "debug_visualizations")
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+            
+        timestamp = time.strftime("%Y%m%d_%H%M%S")
+        filename = os.path.join(output_dir, f"debug_viz_{timestamp}.mp4")
+        
+        fps = config.get("debug_recording.fps", 30)
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        debug_writer = cv2.VideoWriter(filename, fourcc, fps, IMAGE_SIZE)
+        print(f"Debug recording enabled: {filename}")
+
     while (key_press := cv2.waitKey(1)) != KEY_ESC:
         try:
             # Capture Raw Frame (for UI Detection)
@@ -182,33 +203,28 @@ def main():
                     time.sleep(0.5)
                 continue
             elif ui_state == 'LEVEL_UP':
-                print("Level Up detected! Pausing and consulting Gemini...")
+                print("Level Up detected! Pausing and consulting LLM...")
                 bot.stop_movement()
                 
-                # # Convert frame to PIL for Gemini
-                # # OpenCV is BGR, PIL needs RGB
-                # frame_rgb = cv2.cvtColor(frame_raw, cv2.COLOR_BGR2RGB)
-                # pil_image = Image.fromarray(frame_rgb)
+                # Convert frame to PIL for Gemini
+                # OpenCV is BGR, PIL needs RGB
+                frame_rgb = cv2.cvtColor(frame_raw, cv2.COLOR_BGR2RGB)
+                pil_image = Image.fromarray(frame_rgb)
                 
-                # decision = gemini_client.get_decision(pil_image, game_state.to_json())
+                decision = llm_client.get_decision(pil_image, game_state.to_json())
                 
-                # if decision:
-                #     print(f"Gemini Decision: {decision}")
+                if decision:
+                    # Log decision via GameState
+                    # print(f"LLM Decision: {decision}") # Redundant, logged by llm_client
                     
-                #     # [NEW] Confirmation Prompt
-                #     # user_confirm = input("Press Enter to execute decision (or 'n' to skip/cancel): ")
-                    
-                #     time.sleep(5)
-                #     game_state.log_decision(decision)
-                #     execute_decision(bot, decision)
-                    
-                #     # Wait a bit for animation
-                #     cv2.waitKey(2000) 
-                # else:
-                #     print("Gemini failed to decide. Resuming manually (or stuck).")
+                    time.sleep(3)
+                    game_state.log_decision(decision)
+                    execute_decision(bot, decision)
+                
+                else:
+                    print("LLM failed to decide. Resuming manually (or stuck).")
                 
                 continue
-
             elif ui_state == 'GAMEPLAY':
                 # --- GAMEPLAY LOGIC ---
                 # Resize frame for Object Detection and Pilot (Model expects IMAGE_SIZE)
@@ -265,19 +281,37 @@ def main():
                 
                 if active_target:
                     cv2.circle(frame, (int(active_target[0]), int(active_target[1])), 10, (0, 0, 255), -1)
-                    print(f"Target: {active_target}")
+                    # print(f"Target: {active_target}")
 
                 cv2.imshow("Model Vision", frame)
+                
+                # [NEW] Debug Recording
+                if debug_writer is not None:
+                     debug_writer.write(frame)
+
                 check_and_update_view_position(key_press, game_area)
                 handle_pause(key_press, pause_event)
             else:
                 print("Unknown UI State: ", ui_state)
-        except Exception:
+        except KeyboardInterrupt:
+            print("\n[Main] Interrupted by user.")
+            break
+        except Exception as e:
+            print(f"[Main] Error in loop: {e}")
             bot.stop_movement()
-            raise Exception
-
+            raise e
+    
+    # Cleanup
+    print("[Main] Cleanup initiated...")
     bot.stop_movement()
+    recorder.stop()
+    
+    if debug_writer is not None:
+        debug_writer.release()
+        print("[Main] Debug recording saved.")
+        
     cv2.destroyAllWindows()
+    print("[Main] Cleanup complete.")
     return 0
 
 

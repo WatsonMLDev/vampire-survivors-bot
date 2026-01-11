@@ -3,3 +3,4 @@ screenshots/
 __pycache__/
 other_models/
 .env
+training_data/
