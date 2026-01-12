@@ -19,19 +19,20 @@ debug_recording:
 llm:
   # Format: provider/model_name (e.g., gemini/gemini-1.5-flash, ollama/llama2, openai/gpt-4)
   # For LM Studio (OpenAI compatible), prepend 'openai/' to the model name
-  model: "openai/zai-org/glm-4.6v-flash"
+  # model: "openai/zai-org/glm-4.6v-flash"
+  model: "gemini/gemini-3-flash-preview"
   api_key_env_var: "GOOGLE_API_KEY" # Not strictly used for local, but kept for structure
   # Optional: Base URL for local providers (e.g., "http://localhost:1234/v1" for LM Studio)
-  api_base: "http://localhost:1234/v1" 
+  # api_base: "http://localhost:1234/v1"
 
 pilot:
   forces:
     attract_target: 150.0
     attract_rune: 10.0
-    repel_monster: 1000.0  # Doubled
-    repulsion_cap: 2000.0  # Quadrupled to allow stronger emergency vectors
+    repel_monster: 1000.0  
+    repulsion_cap: 2000.0  
     repulsion_range: 100
-    critical_repulsion_range: 50 # New: If closer than this, ignore attraction
+    critical_repulsion_range: 50 
   sticky_target:
     min_runes: 2
     better_cluster_multiplier: 1.5
@@ -57,3 +58,8 @@ paths:
 timeouts:
   treasure_open: 30
   treasure_step: 0.5
+
+initial_state:
+  enabled: true
+  weapons: ["Phiera Der Tuphello", "Eight The Sparrow"] 
+  passives: [] 

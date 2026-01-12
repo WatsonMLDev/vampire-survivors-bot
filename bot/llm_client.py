@@ -61,16 +61,97 @@ class LLMClient:
         timestamp = time.strftime("%Y%m%d_%H%M%S")
         self.log_filename = os.path.join(self.output_dir, f"decisions_{timestamp}.jsonl")
 
+        # Initialize Static System Content for Caching
+        self.static_system_content = self._get_system_content()
+
     def _image_to_base64(self, image: Image.Image) -> str:
         buffered = io.BytesIO()
         image.save(buffered, format="JPEG")
         return base64.b64encode(buffered.getvalue()).decode("utf-8")
 
+    def _get_system_content(self) -> str:
+        """Returns the static part of the prompt that can be cached."""
+        evolutions_str = json.dumps(self.evolutions[:50], indent=2) # Limit context if large
+        sample_strategy_str = json.dumps(self.sample_strategy, indent=2)
+
+        return f"""
+        You are the Grand Strategist AI for Vampire Survivors. Your objective is to build an invincible endgame loadout by mastering "Slot Economy" and "Pool Pruning."
+
+        ### STRATEGIC INTELLIGENCE
+        - **Samples of Target Builds/Strategies you COULD follow**: {sample_strategy_str}
+        - **Evolution & Union Chart**: {evolutions_str}
+        - **The Union Rule**: Remember that Unions (e.g., Peachone + Ebony Wings) merge two weapons into ONE slot, liberating a slot for a future weapon.
+
+        ### DECISION HIERARCHY (Priority Order)
+        1. **Evolution/Union Completion**: If an option completes a weapon/passive pair you already own, take it immediately.
+        2. **Core Component Acquisition**: If an option is a "Best-in-Slot" for your strategy, take it.
+        3. **Slot Filling (Early Game)**: If you have > 3 empty slots, favor taking ANY decent weapon/passive over Banishing, unless it is actively harmful (e.g. Curse) or worthless. Do not be too picky early on; survival requires firepower.
+        4. **Incremental Upgrade**: Upgrade existing items if no new useful items appear.
+        5. **Strategic Pruning**: Only use Banish if:
+            - The item is strictly harmful (like Skull O'Maniac if weak).
+            - You have < 2 slots left and MUST save them for a specific key component.
+            - The item appears repeatedly and you never want it.
+
+        ### THE TASK
+        Analyze the number of options on the Level Up screen. You must decide: 
+        Is it better to **COMMIT** to a new item, **UPGRADE** an existing one, or **PRUNE** the pool to protect your future build?
+
+        **Output Format (JSON)**:
+        {{
+            "analysis": {{
+                "visible_options": ["List of items seen on screen (Top to Bottom)"],
+                "strategy_fit": "Does anything on screen complete an evolution or fit the long-term plan?",
+                "slot_management": "How many slots remain, and can a Union free one up later?",
+                "survival_vs_optimization": "Comparison of the value of an incremental upgrade vs. the value of a Banish/Skip."
+            }},
+            "decision": {{
+                "action": "select" | "reroll" | "skip" | "banish",
+                "slot": int (1-4),
+                "item_name": "Name of item"
+            }}
+        }}
+        """
+
+    def _get_user_content(self, game_state: Dict[str, Any]) -> str:
+        """Returns the dynamic part of the prompt based on current game state."""
+        inventory_str = json.dumps(game_state, indent=2)
+        
+        # Limit history to prevent context pollution and prune unnecessary fields
+        full_history = game_state.get("history", [])
+        recent_history = full_history[-15:] if len(full_history) > 15 else full_history
+        
+        # Simplified history: Drop 'slot' and 'reasoning'
+        simplified_history = [
+            {"action": h.get("action"), "item": h.get("item_name")} 
+            for h in recent_history
+        ]
+        history_str = json.dumps(simplified_history, indent=2)
+
+        # Calculate counts
+        current_weapon_count = len(game_state.get("weapons", []))
+        current_passive_count = len(game_state.get("passives", []))
+
+        return f"""
+        ### CURRENT GAME STATE (What you ALREADY OWN)
+        - **Inventory**: {inventory_str}
+        - **Empty Slots**: {6 - current_weapon_count} Weapons | {6 - current_passive_count} Passives
+        - **Available Resources**: Use the image to find the amount of Reroll, Skip, Banish left
+        - **Decision History**: {history_str}
+
+        ### VISUAL ANALYSIS (What is on SCREEN)
+        - Look at the provided screenshot. These are the *ONLY* options you can choose from.
+        - **CRITICAL**: Do not confuse items in your Inventory with items on the Screen. 
+        - If you see an item on screen that you already have, selecting it means **UPGRADING** it.
+        - If you see an item you don't have, selecting it means **ACQUIRING** it.
+        - **Evolved Weapons** (like Holy Wand, Death Spiral) NEVER appear on Level Up screens. If you think you see one, look closer; it's likely the base weapon or something else.
+        """
+
     def get_decision(self, frame_image: Image.Image, game_state: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """
         Sends the screenshot and game state to the LLM to get a level-up decision.
+        Uses Context Caching for the system prompt.
         """
-        prompt = self._construct_prompt(game_state)
+        user_prompt = self._get_user_content(game_state)
         
         # Prepare content for LiteLLM (Standard OpenAI Multimodal Format)
         base64_image = self._image_to_base64(frame_image)
@@ -78,9 +159,19 @@ class LLMClient:
         
         messages = [
             {
+                "role": "system",
+                "content": [
+                    {
+                        "type": "text", 
+                        "text": self.static_system_content,
+                        "cache_control": {"type": "ephemeral"} 
+                    }
+                ]
+            },
+            {
                 "role": "user",
                 "content": [
-                    {"type": "text", "text": prompt},
+                    {"type": "text", "text": user_prompt},
                     {
                         "type": "image_url",
                         "image_url": {"url": image_url}
@@ -116,10 +207,9 @@ class LLMClient:
                         "properties": {
                             "action": {"type": "string", "enum": ["select", "reroll", "skip", "banish"]},
                             "slot": {"type": "integer"},
-                            "item_name": {"type": "string"},
-                            "reasoning": {"type": "string"}
+                            "item_name": {"type": "string"}
                         },
-                        "required": ["action", "slot", "item_name", "reasoning"],
+                        "required": ["action", "slot", "item_name"],
                         "additionalProperties": False
                     }
                 },
@@ -144,12 +234,31 @@ class LLMClient:
         try:
             response = completion(**kwargs)
             
-            content = response.choices[0].message.content
+            # Log usage for verification if available
+            token_usage_Log = {}
+            if hasattr(response, 'usage'):
+                usage = response.usage
+                # logger.info(f"Token Usage: {usage}")
+                
+                # Extract Usage Stats safely
+                token_usage_Log = {
+                    "prompt_tokens": getattr(usage, "prompt_tokens", 0),
+                    "completion_tokens": getattr(usage, "completion_tokens", 0),
+                    "total_tokens": getattr(usage, "total_tokens", 0),
+                    "cached_tokens": 0
+                }
+                
+                # Handle Prompt Token Details for Caching
+                if hasattr(usage, "prompt_tokens_details"):
+                     details = usage.prompt_tokens_details
+                     token_usage_Log["cached_tokens"] = getattr(details, "cached_tokens", 0)
+
+            content = response.choices[0].message.content   
             result = json.loads(content)
             
             # Schema guarantees 'decision' key exists and is valid
             if "decision" in result:
-                logger.info(f"LLM Analysis: {result.get('analysis')}")
+                logger.info(f"LLM Analysis: {result['decision']}")
                 
                 # [NEW] Log to JSONL
                 if self.log_enabled:
@@ -158,7 +267,8 @@ class LLMClient:
                         log_entry = {
                             "timestamp": time.time(),
                             "inventory_str": inventory_str,
-                            "llm_output": result
+                            "llm_output": result,
+                            "token_usage": token_usage_Log 
                         }
                         with open(self.log_filename, "a", encoding='utf-8') as f:
                             json.dump(log_entry, f)
@@ -174,75 +284,3 @@ class LLMClient:
         except Exception as e:
             logger.error(f"LLM call failed: {e}")
             return None
-
-    def _construct_prompt(self, game_state: Dict[str, Any]) -> str:
-        inventory_str = json.dumps(game_state, indent=2)
-        # Limit history to prevent context pollution and prune unnecessary fields
-        full_history = game_state.get("history", [])
-        recent_history = full_history[-15:] if len(full_history) > 15 else full_history
-        
-        # Simplified history: Drop 'slot' and 'reasoning'
-        simplified_history = [
-            {"action": h.get("action"), "item": h.get("item_name")} 
-            for h in recent_history
-        ]
-        history_str = json.dumps(simplified_history, indent=2)
-        evolutions_str = json.dumps(self.evolutions[:50], indent=2) # Limit context if large
-        sample_strategy_str = json.dumps(self.sample_strategy, indent=2)
-        
-        # Calculate counts
-        current_weapon_count = len(game_state.get("weapons", []))
-        current_passive_count = len(game_state.get("passives", []))
-
-        return f"""
-        You are the Grand Strategist AI for Vampire Survivors. Your objective is to build an invincible endgame loadout by mastering "Slot Economy" and "Pool Pruning."
-
-        ### 1. CURRENT GAME STATE (What you ALREADY OWN)
-        - **Inventory**: {inventory_str}
-        - **Empty Slots**: {6 - current_weapon_count} Weapons | {6 - current_passive_count} Passives
-        - **Available Resources**: Use the image to find the amount of Reroll, Skip, Banish left
-        - **Decision History**: {history_str}
-
-        ### 2. VISUAL ANALYSIS (What is on SCREEN)
-        - Look at the provided screenshot. These are the *ONLY* options you can choose from.
-        - **CRITICAL**: Do not confuse items in your Inventory with items on the Screen. 
-        - If you see an item on screen that you already have, selecting it means **UPGRADING** it.
-        - If you see an item you don't have, selecting it means **ACQUIRING** it.
-        - **Evolved Weapons** (like Holy Wand, Death Spiral) NEVER appear on Level Up screens. If you think you see one, look closer; it's likely the base weapon or something else.
-
-        ### 3. STRATEGIC INTELLIGENCE
-        - **Samples of Target Builds/Strategies you COULD follow**: {sample_strategy_str}
-        - **Evolution & Union Chart**: {evolutions_str}
-        - **The Union Rule**: Remember that Unions (e.g., Peachone + Ebony Wings) merge two weapons into ONE slot, liberating a slot for a future weapon.
-
-        ### 4. DECISION HIERARCHY (Priority Order)
-        1. **Evolution/Union Completion**: If an option completes a weapon/passive pair you already own, take it immediately.
-        2. **Core Component Acquisition**: If an option is a "Best-in-Slot" for your strategy, take it.
-        3. **Slot Filling (Early Game)**: If you have > 3 empty slots, favor taking ANY decent weapon/passive over Banishing, unless it is actively harmful (e.g. Curse) or worthless. Do not be too picky early on; survival requires firepower.
-        4. **Incremental Upgrade**: Upgrade existing items if no new useful items appear.
-        5. **Strategic Pruning**: Only use Banish if:
-            - The item is strictly harmful (like Skull O'Maniac if weak).
-            - You have < 2 slots left and MUST save them for a specific key component.
-            - The item appears repeatedly and you never want it.
-
-
-        ### 5. THE TASK
-        Analyze the number of options on the Level Up screen. You must decide: 
-        Is it better to **COMMIT** to a new item, **UPGRADE** an existing one, or **PRUNE** the pool to protect your future build?
-
-        **Output Format (JSON)**:
-        {{
-            "analysis": {{
-                "visible_options": ["List of items seen on screen (Top to Bottom)"],
-                "strategy_fit": "Does anything on screen complete an evolution or fit the long-term plan?",
-                "slot_management": "How many slots remain, and can a Union free one up later?",
-                "survival_vs_optimization": "Comparison of the value of an incremental upgrade vs. the value of a Banish/Skip."
-            }},
-            "decision": {{
-                "action": "select" | "reroll" | "skip" | "banish",
-                "slot": int (1-4),
-                "item_name": "Name of item",
-                "reasoning": "A concise explanation of the strategic choice."
-            }}
-        }}
-        """

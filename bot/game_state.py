@@ -83,3 +83,10 @@ class GameState:
             "passives": self.passives,
             "history_count": len(self.history)
         }
+
+    def update_from_treasure(self, image: Any):
+        """
+        Updates the game state based on the contents of a treasure chest.
+        TODO: Implement visual analysis to identify the obtained item.
+        """
+        print("[GameState] Warning: update_from_treasure is not yet implemented. Inventory not updated.")
