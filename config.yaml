@@ -52,14 +52,23 @@ keybindings:
   p: 112
 
 paths:
-  model: "model/monster_class.pt"
+  enemy_model: "model/enemy.pt"
+  gem_model: "model/gem.pt"
   assets: "assets/"
 
 timeouts:
   treasure_open: 30
   treasure_step: 0.5
 
+detection:
+  enemy:
+    confidence: 0.40
+    iou: 0.5
+  gem:
+    confidence: 0.60
+    iou: 0.5
+
 initial_state:
   enabled: true
-  weapons: ["Phiera Der Tuphello", "Eight The Sparrow"] 
+  weapons: ["Song of Mana"] 
   passives: [] 
