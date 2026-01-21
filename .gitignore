@@ -5,3 +5,4 @@ other_models/
 .env
 training_data/
 sam3.pt
+dataset/
