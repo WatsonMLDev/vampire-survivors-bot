@@ -67,7 +67,7 @@ def handle_treasure_opening(bot, ui_detector, game_state, game_area):
     # Wait for Treasure Done
     start_wait = time.time()
     while True:
-        if time.time() - start_wait > config.get("timeouts.treasure_open", 30): # Timeout 15s
+        if time.time() - start_wait > config.get("timeouts.treasure_open", 60):
             logger.warning("Treasure opening timed out.")
             break
             
@@ -96,6 +96,13 @@ def handle_level_up(bot, llm_client, game_state, frame_raw):
     logger.info("Level Up detected! Pausing and consulting LLM...")
     bot.stop_movement()
     
+    # [FIX] Reset cursor position (Input Bleed Bug)
+    # Spam UP to ensure we are at the top slot, in case gameplay inputs moved it down.
+    logger.debug("Resetting menu cursor...")
+    for _ in range(4):
+        bot.press_dpad_up()
+        time.sleep(0.1)
+    
     # Convert frame to PIL for Gemini
     # OpenCV is BGR, PIL needs RGB
     frame_rgb = cv2.cvtColor(frame_raw, cv2.COLOR_BGR2RGB)
@@ -104,7 +111,8 @@ def handle_level_up(bot, llm_client, game_state, frame_raw):
     decision = llm_client.get_decision(pil_image, game_state.to_json())
     
     if decision:
-        time.sleep(3)
+        time.sleep(2) # Wait for UI to settle (User requested 2s)
+
         game_state.log_decision(decision)
         execute_decision(bot, decision)
     else:

@@ -57,7 +57,7 @@ paths:
   assets: "assets/"
 
 timeouts:
-  treasure_open: 30
+  treasure_open: 60
   treasure_step: 0.5
 
 detection:
@@ -70,5 +70,5 @@ detection:
 
 initial_state:
   enabled: true
-  weapons: ["Song of Mana"] 
+  weapons: ["Phiera Der Tuphello", "Eight The Sparrow"] 
   passives: [] 
