@@ -59,6 +59,24 @@ def handle_revive(bot):
     bot.press_a()
     time.sleep(.5)
 
+def handle_guy(bot):
+    logger.info("Guy Detected! navigating...")
+    time.sleep(.5)
+    bot.press_dpad_down()
+    time.sleep(.5)
+    bot.press_dpad_down()
+    time.sleep(.5)
+    bot.press_dpad_down()
+    time.sleep(.5)
+    bot.press_dpad_down()
+    time.sleep(.5)
+    bot.press_dpad_down()
+    time.sleep(.5)
+    bot.press_dpad_down()
+    time.sleep(.5)
+    bot.press_a()
+    time.sleep(.5)
+
 def handle_treasure_opening(bot, ui_detector, game_state, game_area):
     logger.info("Treasure Detected! Opening...")
     time.sleep(1) # Wait for animation start

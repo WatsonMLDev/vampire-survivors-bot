@@ -126,6 +126,8 @@ class VampireSurvivorsBot:
                         break
                     elif ui_state == 'REVIVE':
                         handle_revive(self.input_controller)
+                    elif ui_state == 'GUY':
+                        handle_guy(self.input_controller)
                     elif ui_state == 'TREASURE_START':
                         handle_treasure_opening(self.input_controller, self.ui_detector, self.game_state, self.game_area)
                         continue

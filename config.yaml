@@ -45,6 +45,7 @@ ui_templates:
   treasure_done: "treasure_done.png"
   quit: "quit.png"
   revive: "revive.png"
+  guy: "guy_screen.png"
 
 keybindings:
   esc: 27
@@ -70,5 +71,5 @@ detection:
 
 initial_state:
   enabled: true
-  weapons: ["Phiera Der Tuphello", "Eight The Sparrow"] 
+  weapons: ["Bloody Tear"] 
   passives: [] 
